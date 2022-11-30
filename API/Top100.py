@@ -6,3 +6,4 @@ playlist = pd.read_json(url)
 titles = []
 for track in playlist.tracks.data:
     titles.append(track.get("title"))
+
