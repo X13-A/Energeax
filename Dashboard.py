@@ -6,7 +6,6 @@ import pandas as pd
 
 annees = [i for i in range(2011, 2022)]
 annees.reverse()
-
 app = Dash(__name__)
 app.layout = html.Div([
     
