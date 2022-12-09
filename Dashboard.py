@@ -3,17 +3,31 @@
 from dash import Dash, dcc, html, Input, Output
 from dash.exceptions import PreventUpdate
 import pandas as pd
+from requests import getElecByRegionAndYear
 
 annees = [i for i in range(2011, 2022)]
 annees.reverse()
+data = None
+
+filtres = {
+    "annee" : "",
+    "region" : "",
+    "filiere" : "",
+    "secteur" : "",
+    "lignes" : "10000"
+}
+
+#region Dashboard
+
 app = Dash(__name__)
 app.layout = html.Div([
     
     html.Div([
         html.Div([
-            html.Br(id='filiaire'),
-            html.Label('Sélectionnez une filiaire'),
-            dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité'),
+            html.Br(),
+            html.Label('Sélectionnez une filière'),
+            dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems'),
+            html.Div(id='dd-output-filiere'),
         ]),
         html.Div([
             html.Br(),
@@ -25,7 +39,7 @@ app.layout = html.Div([
                         'Résidentiel'],
                         placeholder="Sélectionnez un ou plusieurs secteurs",
                         id='secteur-dropdown',
-                        multi=True), 
+                        multi=False), 
             html.Div(id='dd-output-secteur'),
         ]),
         html.Div([
@@ -52,7 +66,7 @@ app.layout = html.Div([
                         'Mayotte'],
                         placeholder="Sélectionnez une ou plusieurs régions",
                         id='region-dropdown',
-                        multi=True),
+                        multi=False),
             html.Div(id='dd-output-region'),
         ]),
         html.Div([
@@ -64,30 +78,53 @@ app.layout = html.Div([
     ], style={'padding': 10, 'display': 'flex', 'flex-direction': 'column'}),
 
     html.Div([
-        html.Div([ 'Inserer graph' ]),
+        html.Div([ str(data) ]),
     ])
 ], style={'padding': 10, 'display': 'flex'})
+
+#endregion
+
+#region Callback
+
+@app.callback(
+    Output('dd-output-filiere', 'children'),
+    Input('filiere-radioitems', 'value'),
+)
+def update_output(value):
+    filtres["filiere"] = value
+    update()
 
 @app.callback(
     Output('dd-output-secteur', 'children'),
     Input('secteur-dropdown', 'value'),
 )
 def update_output(value):
-    return f'Vous avez sélectionnez : {value}'
+    filtres["secteur"] = value
+    update()
 
 @app.callback(
     Output('dd-output-region', 'children'),
     Input('region-dropdown', 'value'),
 )
 def update_output(value):
-    return f'Vous avez sélectionnez : {value}'
+    filtres["region"] = value
+    update()
 
 @app.callback(
     Output('dd-output-annee', 'children'),
     Input('annee-dropdown', 'value'),
 )
 def update_output(value):
-    return f'Vous avez sélectionnez : {value}'
+    if value:
+        filtres["annee"] = str(value)
+        update()
+
+#endregion
+
+def update():
+    if (filtres["filiere"] and filtres["annee"]):
+        data = getElecByRegionAndYear(filtres)
+    
 
 if __name__ == '__main__':
     app.run_server(debug=True)
