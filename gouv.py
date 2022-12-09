@@ -2,7 +2,12 @@ import urllib.request
 import json
 import pandas as pd
 
-def getElecByRegionAndYear(filiere, region = "", annee = "", lignes = "10000"):
+def getElecByRegionAndYear(filtres):
+    lignes = filtres["lignes"]
+    annee = filtres["annee"]
+    region = filtres["region"]
+    filiere = filtres["filiere"]
+    
     lignesQuery = (f"&rows={urllib.parse.quote(lignes)}" if lignes else "&rows=10")
     anneeQuery = (f"&refine.annee={urllib.parse.quote(annee)}" if annee else "")
     regionQuery = (f"&refine.libelle_region={urllib.parse.quote(region)}" if region else "")
@@ -33,7 +38,7 @@ def main ():
     annee = "2019"
     region = "Île-de-France"
     filiere = "Electricité"
-    getElecByRegionAndYear(filiere="filiere")
+    getElecByRegionAndYear(filiere=filiere, annee=annee)
 
 graph = 3
 main()
