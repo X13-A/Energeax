@@ -1,16 +1,19 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, State
 from dash.exceptions import PreventUpdate
 import pandas as pd
-from requests import getElecByRegionAndYear
+import plotly.express as px
+import plotly.graph_objects as go
+
+from requests.elec_region_year import getElecByRegionAndYear
 
 annees = [i for i in range(2011, 2022)]
 annees.reverse()
 data = None
 
 filtres = {
-    "annee" : "",
+    "annees" : [],
     "region" : "",
     "filiere" : "",
     "secteur" : "",
@@ -21,7 +24,6 @@ filtres = {
 
 app = Dash(__name__)
 app.layout = html.Div([
-    
     html.Div([
         html.Div([
             html.Br(),
@@ -72,8 +74,13 @@ app.layout = html.Div([
         html.Div([
             html.Br(),
             html.Label('Sélectionnez une année'),
-            dcc.Dropdown(annees, id='annee-dropdown', multi=False, placeholder='Sélectionnez une année'),
+            dcc.Dropdown(annees, id='annee-dropdown', placeholder='Sélectionnez une année', multi=True),
             html.Div(id='dd-output-annee'),
+        ]),
+        html.Div([
+            html.Br(),
+            html.Button("Update", id="update-button", n_clicks=0),
+            html.Div(id='dd-output-update'),
         ]),
     ], style={'padding': 10, 'display': 'flex', 'flex-direction': 'column'}),
 
@@ -92,7 +99,6 @@ app.layout = html.Div([
 )
 def update_output(value):
     filtres["filiere"] = value
-    update()
 
 @app.callback(
     Output('dd-output-secteur', 'children'),
@@ -100,7 +106,6 @@ def update_output(value):
 )
 def update_output(value):
     filtres["secteur"] = value
-    update()
 
 @app.callback(
     Output('dd-output-region', 'children'),
@@ -108,23 +113,32 @@ def update_output(value):
 )
 def update_output(value):
     filtres["region"] = value
-    update()
 
 @app.callback(
     Output('dd-output-annee', 'children'),
     Input('annee-dropdown', 'value'),
 )
 def update_output(value):
-    if value:
-        filtres["annee"] = str(value)
-        update()
+    filtres["annees"] = value
+
+@app.callback(
+    Output('dd-output-update', 'children'),
+    [Input('update-button', 'n_clicks')],
+)
+def update_output(value):
+    update()
+
 
 #endregion
 
 def update():
-    if (filtres["filiere"] and filtres["annee"]):
+    global data
+    global filtres
+    print (filtres)
+    if (filtres["filiere"] and filtres["annees"] != None and len(filtres["annees"]) > 0):
         data = getElecByRegionAndYear(filtres)
-    
+        fig = px.line(data, x='annee', y='conso', range_y=[0, data.max()*1.25])
+        fig.show()
 
 if __name__ == '__main__':
     app.run_server(debug=True)
