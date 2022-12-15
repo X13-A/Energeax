@@ -15,14 +15,18 @@ def buildUrl(lignes, annee, region, filiere, secteur):
     return url
 
 def getElecByRegionAndYear(filtres):
+    # Create years list
+    annees = [i for i in range(filtres["debut"], filtres["fin"]+1)]
+
     # Init dict
     dict = { "annee": [],
             "region": [],
             "conso": [],
             "secteur": [] }
 
+
     # Get data for each year
-    for annee in filtres["annees"]:
+    for annee in annees:
         url = buildUrl(filtres["lignes"], annee, filtres["region"], filtres["filiere"], filtres["secteur"])
         response =  urllib.request.urlopen(url)
         data = json.loads(response.read())
@@ -36,23 +40,25 @@ def getElecByRegionAndYear(filtres):
     # Get total consumption for each year 
     consos = []
     dataframe = pd.DataFrame(dict)
-    for annee in filtres["annees"]:
+    for annee in annees:
         consos.append(dataframe.loc[dataframe["annee"] == annee]["conso"].sum())
     
     # Return pandas frame
     return pd.DataFrame({
-        "annee": filtres["annees"],
+        "annee": annees,
         "conso": consos
     })
 
-# Test algorithm and print values:
-filtres = {
-    "annees" : [2021,2020,2019],
-    "region" : "",
-    "filiere" : "Electricité",
-    "secteur" : "",
-    "lignes" : "10000"
-}
+def main():
+    # Test algorithm and print values:
+    filtres = {
+        "debut" : 2017,
+        "fin": 2021,
+        "region" : "",
+        "filiere" : "Electricité",
+        "secteur" : "",
+        "lignes" : "10000"
+    }
 
-data = getElecByRegionAndYear(filtres)
-print(data)
+    data = getElecByRegionAndYear(filtres)
+    print(data)
