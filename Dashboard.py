@@ -55,6 +55,7 @@ graph = None
 
 app = Dash(__name__)
 app.layout = html.Div([
+    html.Div([html.H1("EnergyBoard")], className="header"),
     html.Div([
         html.Div([
             html.Br(),
@@ -94,15 +95,14 @@ app.layout = html.Div([
         ]),
         html.Div([
             html.Br(),
-            html.Button("Update", id="update-button", n_clicks=0),
-            html.Button("Show", id="show-button", n_clicks=0),
+            html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
+            html.Button("Show", id="show-button", className="modern-button", n_clicks=0),
             html.Div(id='dd-output-update'),
         ]),
-    ], style={'padding': 10, 'display': 'flex', 'flex-direction': 'column'}),
-    html.Div(id='dd-output-data', style={'color': 'red', 'font-weight': 'bold', 'font-size': '2rem', 'background-color': 'black'}),
+    ], className="menu"),
+    html.Div([html.Div([html.H1("Hello world"), html.Br()], id='dd-output-data')], className="main"),
     dcc.Store(id='store'),
-    html.Div(graph, id="graph"),
-], style={'padding': 10, 'display': 'flex'})
+], className="content")
 
 #endregion
 
@@ -182,7 +182,7 @@ def update():
     if areInputsValid():
         data = getElecByRegionAndYear(filtres)
         titre = f"Consommation par année {'du secteur ' +  filtres['secteur'] if filtres['secteur'] else ''} en {filtres['region'] if filtres['region'] else 'France'}"
-        fig = px.bar(data, x='annee', y='conso', range_y=[0, data.max()*1.25], title=titre, labels={'annee': 'Année', 'conso': 'Consommation'})
+        fig = px.line(data, x='annee', y='conso', range_y=[0, data.max()*1.25], title=titre, labels={'annee': 'Année', 'conso': 'Consommation'})
         # fig.show()
         
         graph = dcc.Graph(figure = fig)
