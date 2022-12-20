@@ -3,9 +3,21 @@
     margin: 0;
 }
 
+.info {
+    color: grey;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.button-group {
+    margin-top: 1rem;
+    display: flex;
+}
+
 .modern-button {
-    padding: 0.2rem 1rem;
-    margin: 0 0.5rem;
+    width: 50%;
+    padding: 0.5rem 1rem;
+    margin: 0 0.1rem;
     color: white;
     background-color: #8f95de;
     border-radius: 3px;
@@ -18,6 +30,14 @@
     background-color: #8289ce;
 }
 
+.radioItems label {
+    padding-right: 1rem;
+}
+
+.input-label {
+    margin-bottom: 0.5rem;
+}
+
 body {
     color: whitesmoke;
     background-color: #171717;
@@ -28,9 +48,9 @@ body {
     width: 100%;
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 2fr 8fr;
-    grid-template-rows: 2fr 10fr;
-    grid-template-areas: "header header"
+    grid-template-columns: 4fr 10fr;
+    grid-template-rows: 7rem 10fr;
+    grid-template-areas: "menu header"
                          "menu main";
 }
 
@@ -46,9 +66,18 @@ body {
     grid-area: header;
     width: 100%;
     background-color: #8f95de;
-    text-align: center;
+    /* text-align: center; */
+    display: inline-flex;
+    justify-content: space-between;
     padding-top: 2rem;
     border-bottom: 1px solid gray;
+}
+
+.header-item {
+    font-size: 1.5rem;
+    /* font-weight: bold; */
+    padding: 0 2rem;
+    max-width: fit-content;
 }
 
 .main {

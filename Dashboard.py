@@ -1,5 +1,5 @@
 # visit http://127.0.0.1:8050/ in your web browser.
-
+import dash
 from dash import Dash, dcc, html, Input, Output, State
 import json
 from dash.exceptions import PreventUpdate
@@ -40,7 +40,7 @@ secteurs = ['Tertiaire',
 filtres = {
     "debut": "",
     "fin": "",
-    "region" : "",
+    "regions" : [],
     "filiere" : "",
     "secteur" : "",
     "lignes" : "10000"
@@ -48,26 +48,26 @@ filtres = {
 
 data = pd.DataFrame([])
 graph = None
-
 #endregion
 
 #region Dashboard
-
 app = Dash(__name__)
 app.layout = html.Div([
-    html.Div([html.H1("EnergyBoard")], className="header"),
+    # Header
+    html.Div([html.Span("EnergyBoard", className="header-item"), html.Span("ESIEE Paris", className="header-item")], className="header"),
+    # Menu
     html.Div([
         html.Div([
             html.Br(),
-            html.Label('Sélectionnez une filière'),
-            dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems'),
+            html.Label('Filière', className="input-label"),
+            dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems"),
             html.Div(id='dd-output-filiere'),
         ]),
         html.Div([
             html.Br(),
-            html.Label('Sélectionnez un ou plusieurs secteurs'),
+            html.Label('Secteur'),
             dcc.Dropdown(secteurs,
-                        placeholder="Sélectionnez un ou plusieurs secteurs",
+                        placeholder="Sélectionnez un secteur",
                         id='secteur-dropdown',
                         multi=False), 
             html.Div(id='dd-output-secteur'),
@@ -77,9 +77,9 @@ app.layout = html.Div([
             html.Label('Sélectionnez une ou plusieurs régions'),
             dcc.Dropdown(regions,
                         placeholder="Sélectionnez une ou plusieurs régions",
-                        id='region-dropdown',
-                        multi=False),
-            html.Div(id='dd-output-region'),
+                        id='regions-dropdown',
+                        multi=True),
+            html.Div(id='dd-output-regions'),
         ]),
         html.Div([
             html.Br(),
@@ -97,16 +97,19 @@ app.layout = html.Div([
             html.Br(),
             html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
             html.Button("Show", id="show-button", className="modern-button", n_clicks=0),
-            html.Div(id='dd-output-update'),
-        ]),
+            html.Div(id='dd-output-update')
+        ], className="button-group"),
+        html.Div("When update is finished, click \"show\" to display the data", className="info"),
     ], className="menu"),
-    html.Div([html.Div([html.H1("Hello world"), html.Br()], id='dd-output-data')], className="main"),
+    # Main
+    html.Div([html.Div(id='dd-output-data')], className="main"),
     dcc.Store(id='store'),
 ], className="content")
-
 #endregion
 
-#region Callback
+#region Callbacks
+
+#region update data and graph
 @app.callback(
     Output('dd-output-data', 'children'), [Input('show-button', 'n_clicks')]
 )
@@ -121,15 +124,15 @@ def update_graph(value):
 )
 def update_data(value):
     update()
+#endregion
 
-
+#region filters
 @app.callback(
     Output('dd-output-filiere', 'children'),
     Input('filiere-radioitems', 'value'),
 )
 def update_filiere(value):
     filtres["filiere"] = value
-
 
 @app.callback(
     Output('dd-output-secteur', 'children'),
@@ -138,14 +141,12 @@ def update_filiere(value):
 def update_secteur(value):
     filtres["secteur"] = value
 
-
 @app.callback(
-    Output('dd-output-region', 'children'),
-    Input('region-dropdown', 'value'),
+    Output('dd-output-regions', 'children'),
+    Input('regions-dropdown', 'value'),
 )
 def update_region(value):
-    filtres["region"] = value
-
+    filtres["regions"] = value
 
 @app.callback(
     Output('dd-output-debut', 'children'),
@@ -154,15 +155,13 @@ def update_region(value):
 def update_debut(value):
     filtres["debut"] = value
 
-
 @app.callback(
     Output('dd-output-fin', 'children'),
     Input('fin-dropdown', 'value'),
 )
 def update_fin(value):
     filtres["fin"] = value
-
-
+#endregion
 
 #endregion
 
@@ -180,12 +179,20 @@ def update():
     global filtres
     global graph
     if areInputsValid():
-        data = getElecByRegionAndYear(filtres)
-        titre = f"Consommation par année {'du secteur ' +  filtres['secteur'] if filtres['secteur'] else ''} en {filtres['region'] if filtres['region'] else 'France'}"
-        fig = px.line(data, x='annee', y='conso', range_y=[0, data.max()*1.25], title=titre, labels={'annee': 'Année', 'conso': 'Consommation'})
-        # fig.show()
-        
+        titre = f"Consommation en Mégawatts par année {'du secteur ' +  filtres['secteur'] if filtres['secteur'] else ''} en France"
+        fig = go.Figure(layout_title_text=titre)
+        fig.update_yaxes(title = "Consommation (MW)")
+        fig.update_xaxes(title = "Année")
+        # fig = px.line(dataframes[0], x='annee', y='conso', range_y=[0, data.max()*1.25], title=titre, labels={'annee': 'Année', 'conso': 'Consommation'})
+
+        dataframes = getElecByRegionAndYear(filtres)
+        for frame in dataframes:
+            fig = fig.add_trace(go.Scatter(x = dataframes[frame]["annee"],
+                                           y = dataframes[frame]["conso"],
+                                           name = frame))
         graph = dcc.Graph(figure = fig)
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

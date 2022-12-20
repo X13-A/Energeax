@@ -15,39 +15,38 @@ def buildUrl(lignes, annee, region, filiere, secteur):
     return url
 
 def getElecByRegionAndYear(filtres):
+    dataframes = {}
+
     # Create years list
     annees = [i for i in range(filtres["debut"], filtres["fin"]+1)]
 
-    # Init dict
-    dict = { "annee": [],
-            "region": [],
-            "conso": [],
-            "secteur": [] }
+    for region in filtres["regions"]:
+        # Init dict
+        dict = { "annee": [],
+                "conso": [], }
 
+        # Get data for each year
+        for annee in annees:
+            url = buildUrl(filtres["lignes"], annee, region, filtres["filiere"], filtres["secteur"])
+            response =  urllib.request.urlopen(url)
+            data = json.loads(response.read())
+            
+            for entry in data["records"]:
+                dict["annee"].append(annee)
+                dict["conso"].append(entry["fields"]["conso"])
 
-    # Get data for each year
-    for annee in annees:
-        url = buildUrl(filtres["lignes"], annee, filtres["region"], filtres["filiere"], filtres["secteur"])
-        response =  urllib.request.urlopen(url)
-        data = json.loads(response.read())
+        # Get total consumption for each year 
+        consos = []
+        dataframe = pd.DataFrame(dict)
+        for annee in annees:
+            consos.append(dataframe.loc[dataframe["annee"] == annee]["conso"].sum())
         
-        for entry in data["records"]:
-            dict["annee"].append(annee)
-            dict["region"].append(entry["fields"]["libelle_region"])
-            dict["conso"].append(entry["fields"]["conso"])
-            dict["secteur"].append(entry["fields"]["libelle_grand_secteur"])
-
-    # Get total consumption for each year 
-    consos = []
-    dataframe = pd.DataFrame(dict)
-    for annee in annees:
-        consos.append(dataframe.loc[dataframe["annee"] == annee]["conso"].sum())
-    
-    # Return pandas frame
-    return pd.DataFrame({
-        "annee": annees,
-        "conso": consos
-    })
+        # Return pandas frame
+        dataframes[region] = pd.DataFrame({
+            "annee": annees,
+            "conso": consos
+        })
+    return dataframes
 
 def main():
     # Test algorithm and print values:
