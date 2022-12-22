@@ -179,7 +179,7 @@ def update():
     global filtres
     global graph
     if areInputsValid():
-        titre = f"Consommation en Mégawatts par année {'du secteur ' +  filtres['secteur'] if filtres['secteur'] else ''} en France"
+        titre = f"Consommation en Mégawatts par année {'du secteur ' +  filtres['secteur'] + ' ' if filtres['secteur'] else ''}en France"
         fig = go.Figure(layout_title_text=titre)
         fig.update_yaxes(title = "Consommation (MW)")
         fig.update_xaxes(title = "Année")
