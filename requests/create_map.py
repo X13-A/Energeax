@@ -2,43 +2,50 @@ import urllib.request
 import json
 import pandas as pd
 import folium
-from build_url import buildUrl
-from .. dashboard import regions
+from requests.build_url import buildUrl
 
 #style function
 sf = lambda x :{'fillColor':'#8f95de', 'fillOpacity':0.5, 'color':'#6167ad', 'weight':1, 'opacity':1}
 
-def getElecByYear(annee, filiere):
+def getElecByYear(filtres):
     dataframe = None
+
     consos = []
-    # Get data for each region
-    for region in regions:
-        url = buildUrl("10000", annee, region, filiere, "")
-        response = urllib.request.urlopen(url)
-        data = json.loads(response.read())
-        sum = 0
-        for entry in data["records"]:
-            sum += entry["fields"]["conso"]
-        consos.append(sum)
-        
+    for regions in filtres["regions"]:
+        consos.append(0)
+    annees = [i for i in range(filtres["debut"], filtres["fin"]+1)]
+
+    for annee in annees:
+        i = 0
+        for region in filtres["regions"]:
+            url = buildUrl("10000", annee, region, filtres["filiere"], "")
+            response = urllib.request.urlopen(url)
+            data = json.loads(response.read())
+            for entry in data["records"]:
+                consos[i] += entry["fields"]["conso"]
+            i += 1
+
+    # Moyenne sur toutes les années
+    for i in range(len(consos)):
+        consos[i] = consos[i] / len(annees)
+
     # Return pandas frame
     dataframe = pd.DataFrame({
-        "region": regions,
+        "region": filtres["regions"],
         "conso": consos
     })
     return dataframe
 
-def createMap(annee, filiere):
-    conso_data = getElecByYear(annee, filiere)
-    coords = (48.7453229,2.5073644)
+def createMap(dataframe):
+    coords = (48.7453229, 2.5073644)
     map = folium.Map(location=coords, tiles='OpenStreetMap', zoom_start=5)
     geo_data = None
     with open("regions_france.geojson", "r") as f:
         geo_data = json.load(f)
 
     folium.Choropleth(
-        geo_data = geo_data,
-        data=conso_data,
+        geo_data=geo_data,
+        data=dataframe,
         name="france",
         columns=["region", "conso"],
         key_on="feature.properties.nom",
@@ -47,7 +54,36 @@ def createMap(annee, filiere):
         line_opacity=0.2,
         legend_name="Consommation"
     ).add_to(map)
-    map.save(outfile="france.html")
+    return map
 
 # Pour tester
-# createMap("2021", "Electricité")
+# filtres = {
+#     "affichage": "Carte",
+#     "debut": 2020,
+#     "fin": 2021,
+#     "regions" : ['Grand Est',
+#                 'Auvergne-Rhône-Alpes',
+#                 'Occitanie',
+#                 'Hauts-de-France',
+#                 'Nouvelle-Aquitaine',
+#                 'Centre-Val de Loire',
+#                 'Bourgogne-Franche-Comté',
+#                 'Provence-Alpes-Côte d\'Azur',
+#                 'Île-de-France',
+#                 'Normandie',
+#                 'Pays de la Loire',
+#                 'Bretagne',
+#                 'La Réunion',
+#                 'Guadeloupe',
+#                 'Martinique',
+#                 'Corse',
+#                 'Guyane',
+#                 'Non affecté à une région',
+#                 'Mayotte'],
+#     "filiere" : "Electricité",
+#     "secteur" : "",
+#     "lignes" : "10000"
+# }
+
+# dataframe = getElecByYear(filtres)
+# createMap(dataframe)

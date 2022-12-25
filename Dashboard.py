@@ -2,11 +2,14 @@
 import dash
 from dash import Dash, dcc, html, Input, Output, State
 import json
+import folium
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from requests.elec_region_year import getElecByRegionAndYear
+from requests.create_map import createMap
+from requests.create_map import getElecByYear
 
 #region variables
 annees = [i for i in range(2011, 2022)]
@@ -38,6 +41,7 @@ secteurs = ['Tertiaire',
             'Résidentiel']
 
 filtres = {
+    "affichage": "",
     "debut": "",
     "fin": "",
     "regions" : [],
@@ -59,6 +63,12 @@ app.layout = html.Div([
     html.Div([
         html.Div([
             html.Br(),
+            html.Label('Affichage', className="input-label"),
+            dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems', className="radioItems"),
+            html.Div(id='dd-output-affichage'),
+        ]),
+        html.Div([
+            html.Br(),
             html.Label('Filière', className="input-label"),
             dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems"),
             html.Div(id='dd-output-filiere'),
@@ -76,7 +86,7 @@ app.layout = html.Div([
             html.Br(),
             html.Label('Sélectionnez une ou plusieurs régions'),
             dcc.Dropdown(regions,
-                        placeholder="Sélectionnez une ou plusieurs régions",
+                        placeholder="Toutes les régions",
                         id='regions-dropdown',
                         multi=True),
             html.Div(id='dd-output-regions'),
@@ -127,6 +137,14 @@ def update_data(value):
 #endregion
 
 #region filters
+@app.callback(
+    Output('dd-output-affichage', 'children'),
+    Input('affichage-radioitems', 'value'),
+)
+def update_affichage(value):
+    filtres["affichage"] = value
+
+
 @app.callback(
     Output('dd-output-filiere', 'children'),
     Input('filiere-radioitems', 'value'),
@@ -179,18 +197,21 @@ def update():
     global filtres
     global graph
     if areInputsValid():
-        titre = f"Consommation en Mégawatts par année {'du secteur ' +  filtres['secteur'] + ' ' if filtres['secteur'] else ''}en France"
-        fig = go.Figure(layout_title_text=titre)
-        fig.update_yaxes(title = "Consommation (MW)")
-        fig.update_xaxes(title = "Année")
-        # fig = px.line(dataframes[0], x='annee', y='conso', range_y=[0, data.max()*1.25], title=titre, labels={'annee': 'Année', 'conso': 'Consommation'})
-
-        dataframes = getElecByRegionAndYear(filtres)
-        for frame in dataframes:
-            fig = fig.add_trace(go.Scatter(x = dataframes[frame]["annee"],
-                                           y = dataframes[frame]["conso"],
-                                           name = frame))
-        graph = dcc.Graph(figure = fig)
+        if not filtres["regions"]: filtres["regions"] = regions
+        if filtres["affichage"] == "Graphique":
+            titre = f"Consommation en Mégawatts par année {'du secteur ' +  filtres['secteur'] + ' ' if filtres['secteur'] else ''}en France"
+            fig = go.Figure(layout_title_text=titre)
+            fig.update_yaxes(title = "Consommation (MW)")
+            fig.update_xaxes(title = "Année")
+            dataframes = getElecByRegionAndYear(filtres)
+            for frame in dataframes:
+                fig = fig.add_trace(go.Scatter(x = dataframes[frame]["annee"], y = dataframes[frame]["conso"], name = frame))
+            graph = dcc.Graph(figure = fig)
+        elif filtres["affichage"] == "Carte":
+            dataframe = getElecByYear(filtres)
+            map = createMap(dataframe)
+            map.save(outfile="france.html")
+            graph = html.Iframe(id='map', className="map", srcDoc = open('france.html', 'r').read())
 
 
 

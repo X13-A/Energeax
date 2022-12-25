@@ -3,6 +3,11 @@
     margin: 0;
 }
 
+.map {
+    width: 100%;
+    height: 600px;
+}
+
 .info {
     color: grey;
     margin-top: 0.5rem;
@@ -50,7 +55,7 @@ body {
     display: grid;
     grid-template-columns: 4fr 10fr;
     grid-template-rows: 7rem 10fr;
-    grid-template-areas: "menu header"
+    grid-template-areas: "header header"
                          "menu main";
 }
 

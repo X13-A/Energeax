@@ -2,13 +2,12 @@ import urllib.request
 import json
 import pandas as pd
 from requests.build_url import buildUrl
-
+            
 def getElecByRegionAndYear(filtres):
     dataframes = {}
 
     # Create years list
     annees = [i for i in range(filtres["debut"], filtres["fin"]+1)]
-
     for region in filtres["regions"]:
         # Init dict
         dict = { "annee": [],
