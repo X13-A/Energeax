@@ -1,5 +1,4 @@
 # visit http://127.0.0.1:8050/ in your web browser.
-import dash
 from dash import Dash, dcc, html, Input, Output, State
 import json
 import folium
@@ -31,62 +30,75 @@ graph = None
 app = Dash(__name__)
 app.layout = html.Div([
     # Header
-    html.Div([html.Span("EnergyBoard", className="header-item"), html.Span("ESIEE Paris", className="header-item")], className="header"),
-    # Menu
     html.Div([
+        html.H1("Consommation annuelle d'énergie par région", className="header-item"),
+    ], className="header"),
+    # App
+    html.Div([
+        # Menu
         html.Div([
-            html.Br(),
-            html.Label('Affichage', className="input-label"),
-            dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems', className="radioItems"),
-            html.Div(id='dd-output-affichage'),
-        ]),
-        html.Div([
-            html.Br(),
-            html.Label('Filière', className="input-label"),
-            dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems"),
-            html.Div(id='dd-output-filiere'),
-        ]),
-        html.Div([
-            html.Br(),
-            html.Label('Secteur'),
-            dcc.Dropdown(secteurs,
-                        placeholder="Sélectionnez un secteur",
-                        id='secteur-dropdown',
-                        multi=False), 
-            html.Div(id='dd-output-secteur'),
-        ]),
-        html.Div([
-            html.Br(),
-            html.Label('Sélectionnez une ou plusieurs régions'),
-            dcc.Dropdown(regions,
-                        placeholder="Toutes les régions",
-                        id='regions-dropdown',
-                        multi=True),
-            html.Div(id='dd-output-regions'),
-        ]),
-        html.Div([
-            html.Br(),
-            html.Label('Date de début'),
-            dcc.Dropdown(annees, id='debut-dropdown', placeholder='Sélectionnez une année', multi=False),
-            html.Div(id='dd-output-debut'),
-        ]),
-        html.Div([
-            html.Br(),
-            html.Label('Date de fin'),
-            dcc.Dropdown(annees, id='fin-dropdown', placeholder='Sélectionnez une année', multi=False),
-            html.Div(id='dd-output-fin'),
-        ]),
-        html.Div([
-            html.Br(),
-            html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
-            html.Button("Show", id="show-button", className="modern-button", n_clicks=0),
-            html.Div(id='dd-output-update')
-        ], className="button-group"),
-        html.Div("When update is finished, click \"show\" to display the data", className="info"),
-    ], className="menu"),
-    # Main
-    html.Div([html.Div(id='dd-output-data')], className="main"),
-    dcc.Store(id='store'),
+            html.Div([
+                html.Br(),
+                html.Label('Affichage', className="input-label"),
+                dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems', className="radioItems"),
+                html.Div(id='dd-output-affichage'),
+            ]),
+            html.Div([
+                html.Br(),
+                html.Label('Filière', className="input-label"),
+                dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems"),
+                html.Div(id='dd-output-filiere'),
+            ]),
+            html.Div([
+                html.Br(),
+                html.Label('Secteur'),
+                dcc.Dropdown(secteurs,
+                            placeholder="Sélectionnez un secteur",
+                            id='secteur-dropdown',
+                            multi=False), 
+                html.Div(id='dd-output-secteur'),
+            ]),
+            html.Div([
+                html.Br(),
+                html.Label('Sélectionnez une ou plusieurs régions'),
+                dcc.Dropdown(regions,
+                            placeholder="Toutes les régions",
+                            id='regions-dropdown',
+                            multi=True),
+                html.Div(id='dd-output-regions'),
+            ]),
+            html.Div([
+                html.Br(),
+                html.Label('Date de début'),
+                dcc.Dropdown(annees, id='debut-dropdown', placeholder='Sélectionnez une année', multi=False),
+                html.Div(id='dd-output-debut'),
+            ]),
+            html.Div([
+                html.Br(),
+                html.Label('Date de fin'),
+                dcc.Dropdown(annees, id='fin-dropdown', placeholder='Sélectionnez une année', multi=False),
+                html.Div(id='dd-output-fin'),
+            ]),
+            html.Div([
+                html.Br(),
+                html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
+                html.Button("Show", id="show-button", className="modern-button", n_clicks=0),
+                html.Div(id='dd-output-update')
+            ], className="button-group"),
+            html.Div("Lorsque la mise à jour est terminée, cliquez sur \"show\" pour afficher les données.", className="info"),
+        ], className="menu"),
+        # Main
+        html.Div([html.Div(id='dd-output-data')], className="main"),
+        dcc.Store(id='store')
+    ], className="app"),
+    # Footer
+    html.Div([
+        html.Img(src="https://www.usinenouvelle.com/mediatheque/4/3/0/000271034_image_600x315.jpg",
+        alt="logo de l'ESIEE Paris",
+        sizes="100",
+        className="picture"),
+        html.Span("ESIEE Paris", className="header-item")
+    ], className="footer"),
 ], className="content")
 #endregion
 
@@ -116,7 +128,6 @@ def update_data(value):
 )
 def update_affichage(value):
     filtres["affichage"] = value
-
 
 @app.callback(
     Output('dd-output-filiere', 'children'),
