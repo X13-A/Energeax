@@ -33,6 +33,11 @@ body {
     padding-right: 18%;
 }
 
+.picture {
+    width: 100px;
+    height: 80px;
+}
+
 .footer {
     background-color: #272953;
     border-radius: 10px;

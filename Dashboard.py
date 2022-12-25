@@ -95,7 +95,6 @@ app.layout = html.Div([
     html.Div([
         html.Img(src="https://www.usinenouvelle.com/mediatheque/4/3/0/000271034_image_600x315.jpg",
         alt="logo de l'ESIEE Paris",
-        sizes="100",
         className="picture"),
         html.Span("ESIEE Paris", className="header-item")
     ], className="footer"),
