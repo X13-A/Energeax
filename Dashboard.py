@@ -10,36 +10,9 @@ import plotly.graph_objects as go
 from requests.elec_region_year import getElecByRegionAndYear
 from requests.create_map import createMap
 from requests.create_map import getElecByYear
+from constants import *
 
 #region variables
-annees = [i for i in range(2011, 2022)]
-
-regions = ['Grand Est',
-            'Auvergne-Rhône-Alpes',
-            'Occitanie',
-            'Hauts-de-France',
-            'Nouvelle-Aquitaine',
-            'Centre-Val de Loire',
-            'Bourgogne-Franche-Comté',
-            'Provence-Alpes-Côte d\'Azur',
-            'Île-de-France',
-            'Normandie',
-            'Pays de la Loire',
-            'Bretagne',
-            'La Réunion',
-            'Guadeloupe',
-            'Martinique',
-            'Corse',
-            'Guyane',
-            'Non affecté à une région',
-            'Mayotte']
-            
-secteurs = ['Tertiaire',
-            'Industrie',
-            'Secteur Inconnu',
-            'Agriculture',
-            'Résidentiel']
-
 filtres = {
     "affichage": "",
     "debut": "",
@@ -209,11 +182,11 @@ def update():
             graph = dcc.Graph(figure = fig)
         elif filtres["affichage"] == "Carte":
             dataframe = getElecByYear(filtres)
-            map = createMap(dataframe)
+            map = createMap(dataframe, filtres["regions"])
             map.save(outfile="france.html")
             graph = html.Iframe(id='map', className="map", srcDoc = open('france.html', 'r').read())
 
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
