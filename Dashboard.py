@@ -33,6 +33,12 @@ app.layout = html.Div([
     html.Div([
         html.H1("Consommation annuelle d'énergie par région", className="header-item"),
     ], className="header"),
+    # Navigation
+    html.Div([
+        html.Link("Tuto", className="tuto"),
+        html.Div("Les données", className="data"),
+        html.Link("Choix technologiques", className="technos"),
+    ], className="navigation"),
     # App
     html.Div([
         # Menu
@@ -93,10 +99,12 @@ app.layout = html.Div([
     ], className="app"),
     # Footer
     html.Div([
-        html.Img(src="https://www.usinenouvelle.com/mediatheque/4/3/0/000271034_image_600x315.jpg",
-        alt="logo de l'ESIEE Paris",
-        className="picture"),
-        html.Span("ESIEE Paris", className="header-item")
+        html.Div(
+            html.Img(src="https://www.usinenouvelle.com/mediatheque/4/3/0/000271034_image_600x315.jpg",
+            alt="logo de l'ESIEE Paris",
+            className="logo")
+        ),
+        html.Div("Alex Foulon & Erwan Gautier", className="Auteurs")
     ], className="footer"),
 ], className="content")
 #endregion

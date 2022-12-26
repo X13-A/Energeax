@@ -1,5 +1,6 @@
 .content {
     font-family: 'Raleway', sans-serif;
+    color: white;
 }
 
 body {
@@ -14,6 +15,34 @@ body {
     align-items: center;
     font-size: x-large;
     padding: 15px;
+}
+
+.navigation {
+    display: flex;
+    font-size: x-large;
+    margin-top: 8px;
+}
+
+.tuto, .data, .technos {
+    display: flex;
+    background-color: #272953;
+    border-radius: 10px;
+    width: 100%;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+.tuto {
+    margin-right: 4px;
+}
+
+.data {
+    margin: 0px 4px;
+}
+
+.technos {
+    margin-left: 4px;
 }
 
 .app {
@@ -33,25 +62,50 @@ body {
     padding-right: 18%;
 }
 
-.picture {
-    width: 100px;
-    height: 80px;
+.logo {
+    padding-top: 13px;
+    width: 150px;
+    height: 75px;
 }
 
 .footer {
+    display: flex;
     background-color: #272953;
     border-radius: 10px;
     margin-top: 8px;
     padding: 0px 10px 10px 10px;
+    justify-content: space-around;
+    align-items: center;
 }
 
+.button-group {
+    margin-top: 1rem;
+    margin-bottom: 2px;
+    display: flex;
+}
 
+.modern-button {
+    width: 100%;
+    color: white;
+    background-color: #9aa2f4;
+    border-radius: 5px;
+    transition-duration: 200ms;
+}
 
+.update-button {
+    margin-right: 4px;
+}
 
+.show-button {
+    margin-left: 4px;
+}
 
+.modern-button:hover {
+    background-color: #272953;
+    border-color: white;
+}
 
-
-.map {
+/* .map {
     border: none;
     margin: 3%;
     width: 94%;
@@ -69,22 +123,6 @@ body {
     display: flex;
 }
 
-.modern-button {
-    width: 50%;
-    padding: 0.5rem 1rem;
-    margin: 0 0.1rem;
-    color: white;
-    background-color: #8f95de;
-    border-radius: 3px;
-    border: none;
-    transition-duration: 200ms;
-}
-
-.modern-button:hover {
-    cursor: pointer;
-    background-color: #8289ce;
-}
-
 .radioItems label {
     padding-right: 1rem;
 }
@@ -92,8 +130,4 @@ body {
 .input-label {
     margin-bottom: 0.5rem;
 }
-
-body {
-    color: whitesmoke;
-    background-color: #171717;
-}
+*/
