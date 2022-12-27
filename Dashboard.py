@@ -28,6 +28,7 @@ graph = None
 
 #region Dashboard
 app = Dash(__name__)
+app.title = 'Energeax'
 app.layout = html.Div([
     # Header
     html.Div([
@@ -35,9 +36,19 @@ app.layout = html.Div([
     ], className="header"),
     # Navigation
     html.Div([
-        html.Link("Tuto", className="tuto"),
-        html.Div("Les données", className="data"),
-        html.Link("Choix technologiques", className="technos"),
+
+        dcc.ConfirmDialogProvider(children=html.Button('Tuto', className="tuto"),
+        message='jczerb',
+        id='test'),
+
+        dcc.ConfirmDialogProvider(children=html.Button('Les données', className="data"),
+        message='jczerb',
+        id='test'),
+
+        dcc.ConfirmDialogProvider(children=html.Button('Choix technologiques', className="technos"),
+        message='jczerb',
+        id='test'),
+        
     ], className="navigation"),
     # App
     html.Div([
@@ -46,7 +57,7 @@ app.layout = html.Div([
             html.Div([
                 html.Br(),
                 html.Label('Affichage', className="input-label"),
-                dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems', className="radioItems"),
+                dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems',className="radioItems"),
                 html.Div(id='dd-output-affichage'),
             ]),
             html.Div([
@@ -109,11 +120,35 @@ app.layout = html.Div([
 ], className="content")
 #endregion
 
-#region Callbacks
-
-#region update data and graph
+#region callback navigation
 @app.callback(
-    Output('dd-output-data', 'children'), [Input('show-button', 'n_clicks')]
+    Output('body-div', 'children'),
+    Input('tuto-button', 'n_clicks')
+)
+def update_output(n_clicks):
+    if n_clicks is None:
+        # Afficher la pop-up
+        return {'display': 'block'}
+    else:
+        # Masquer la pop-up
+        return {'display': 'none'}
+
+# @app.callback(
+#     Output('dd-output-data', 'children'),
+#     [Input('data-button', 'n_clicks')]
+# )
+
+# @app.callback(
+#     Output('dd-output-data', 'children'),
+#     [Input('technos-button', 'n_clicks')]
+# )
+
+#endregion
+
+#region callback data and graph
+@app.callback(
+    Output('dd-output-data', 'children'),
+    [Input('show-button', 'n_clicks')]
 )
 def update_graph(value):
     return html.Div([
@@ -128,7 +163,7 @@ def update_data(value):
     update()
 #endregion
 
-#region filters
+#region callback filters
 @app.callback(
     Output('dd-output-affichage', 'children'),
     Input('affichage-radioitems', 'value'),
@@ -172,7 +207,6 @@ def update_fin(value):
     filtres["fin"] = value
 #endregion
 
-#endregion
 
 def areInputsValid():
     filledInputs = filtres['debut'] and filtres['fin'] and filtres["filiere"]
@@ -203,8 +237,6 @@ def update():
             map = createMap(dataframe, filtres["regions"])
             map.save(outfile="france.html")
             graph = html.Iframe(id='map', className="map", srcDoc = open('france.html', 'r').read())
-
-
 
 if __name__ == '__main__':
     app.run_server(debug=False)
