@@ -1,46 +1,59 @@
 .content {
     font-family: 'Raleway', sans-serif;
-    color: white;
+    color: black;
 }
 
 body {
-    background-color: #16113a;
+    background-color: whitesmoke;
 }
 
 .header {
     display: flex;
-    background-color: #272953;
-    border-radius: 10px;
     justify-content: center;
+    border-bottom: 1px solid;
     align-items: center;
     font-size: x-large;
     padding: 15px;
 }
 
+.app {
+    display: flex;
+}
+
+.left {
+    margin-top: 5px;
+    padding-right: 10px;
+    border-right: 1px solid;
+}
+
+.right {
+    padding-left: 5px;
+    width: 100%;
+}
+
 .navigation {
     display: flex;
-    margin-top: 8px;
+    margin: 8px;
 }
 
 .tuto, .data, .technos {
-    border-radius: 10px;
     height: 70px;
     width: 100%;
 }
 
 .tuto-button, .data-button, .technos-button {
-    font-size: x-large;
-    background-color: #383d76;
-    border: transparent;
-    color: white;
+    font-size: large;
+    background-color: rgb(229, 229, 229);
+    border-color: transparent;
+    color: black;
     border-radius: 10px;
-    height: 70px;
+    height: 60px;
     width: 100%;
 }
 
 .tuto-button:hover, .data-button:hover, .technos-button:hover {
-    background-color: #2e3160;
-    border-color: white;
+    border-color: black;
+    background-color: white;
 }
 
 .tuto {
@@ -55,37 +68,32 @@ body {
     margin-left: 4px;
 }
 
-.app {
+.footer {
     display: flex;
-    justify-content: space-between;
-}
-
-.menu {
-    background-color: #272953;
-    border-radius: 10px;
+    border-top: 1px solid;
     margin-top: 8px;
     padding: 0px 10px 10px 10px;
+    justify-content: space-around;
+    align-items: center;
 }
 
-.main {
-    padding-top: 8px;
-    padding-right: 18%;
+.map, .dash-graph {
+    border: none;
+    width: 730px;
+    height: 500px;
+    margin-left: 25%;
+}
+
+.info {
+    font-style: italic;
+    color: grey;
+    font-size: 0.8rem;
 }
 
 .logo {
     padding-top: 13px;
     width: 150px;
     height: 75px;
-}
-
-.footer {
-    display: flex;
-    background-color: #272953;
-    border-radius: 10px;
-    margin-top: 8px;
-    padding: 0px 10px 10px 10px;
-    justify-content: space-around;
-    align-items: center;
 }
 
 .button-group {
@@ -95,19 +103,8 @@ body {
     height: 40px;
 }
 
-.info {
-    font-style: italic;
-    color: grey;
-    font-size: 0.8rem;
-}
-
-.modern-button {
-    width: 100%;
-    color: white;
-    background-color: #818af2;
-    border-color: transparent;
-    border-radius: 6px;
-    margin-bottom: 3px;
+.radioItems label {
+    padding-right: 1rem;
 }
 
 #update-button {
@@ -118,22 +115,15 @@ body {
     margin-left: 5px;
 }
 
+.modern-button {
+    width: 100%;
+    background-color: rgb(229, 229, 229);
+    border-color: transparent;
+    border-radius: 6px;
+    margin-bottom: 3px;
+}
+
 .modern-button:hover {
-    background-color: #272953;
-    border-color: white;
-}
-
-#secteur-dropdown, #regions-dropdown, #debut-dropdown, #fin-dropdown {
-    color: black;
-  }
-
-.map, .dash-graph {
-    border: none;
-    width: 730px;
-    height: 500px;
-    margin-left: 25%;
-}
-
-.radioItems label {
-    padding-right: 1rem;
+    background-color: white;
+    border-color: black;
 }

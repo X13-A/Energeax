@@ -30,92 +30,103 @@ graph = None
 app = Dash(__name__)
 app.title = 'Energeax'
 app.layout = html.Div([
+
     # Header
     html.Div([
         html.H1("Consommation annuelle d'énergie par région", className="header-item"),
     ], className="header"),
-    # Navigation
-    html.Div([
 
-        
-        html.Div([
-        dcc.ConfirmDialogProvider(children=html.Button('Tuto', className="tuto-button"),
-        message="Choisissez l'affichage que vous voulez, puis la filière qui vous intéresse, ainsi que les paramètres de votre recherche (secteur, régions et dates).\nEnsuite appuyer sur update, attendre la fin du chargement, appuyer sur affichage.",
-        id='tuto-message'),
-        ], className="tuto"),
-
-        html.Div([
-        dcc.ConfirmDialogProvider(children=html.Button('Les données', className="data-button"),
-        message="Nos données proviennent du site data.gouv, plus précisément de l'agence ORE.\nElles sont accessible avec lien suivant : https://opendata.agenceore.fr/explore/dataset/conso-elec-gaz-annuelle-par-naf-agregee-region/api/",
-        id='data-message'),
-        ], className="data"),
-
-        
-        html.Div([
-        dcc.ConfirmDialogProvider(children=html.Button('Choix technologiques', className="technos-button"),
-        message="Nous avons utilisés la biblitohèque python 'plotly' pour générer le site WEB ainsi que les différents graphiques.",
-        id='technos-message'),
-        ], className="technos"),
-        
-    ], className="navigation"),
     # App
     html.Div([
-        # Menu
+        
         html.Div([
+            # Menu
             html.Div([
-                html.Br(),
-                html.Label('Affichage', className="input-label"),
-                dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems',className="radioItems"),
-                html.Div(id='dd-output-affichage'),
-            ]),
-            html.Div([
-                html.Br(),
-                html.Label('Filière', className="input-label"),
-                dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems"),
-                html.Div(id='dd-output-filiere'),
-            ]),
-            html.Div([
-                html.Br(),
-                html.Label('Secteur'),
-                dcc.Dropdown(secteurs,
-                            placeholder="Sélectionnez un secteur",
-                            id='secteur-dropdown',
-                            multi=False), 
-                html.Div(id='dd-output-secteur'),
-            ]),
-            html.Div([
-                html.Br(),
-                html.Label('Sélectionnez une ou plusieurs régions'),
-                dcc.Dropdown(regions,
-                            placeholder="Toutes les régions",
-                            id='regions-dropdown',
-                            multi=True),
-                html.Div(id='dd-output-regions'),
-            ]),
-            html.Div([
-                html.Br(),
-                html.Label('Date de début'),
-                dcc.Dropdown(annees, id='debut-dropdown', placeholder='Sélectionnez une année', multi=False),
-                html.Div(id='dd-output-debut'),
-            ]),
-            html.Div([
-                html.Br(),
-                html.Label('Date de fin'),
-                dcc.Dropdown(annees, id='fin-dropdown', placeholder='Sélectionnez une année', multi=False),
-                html.Div(id='dd-output-fin'),
-            ]),
-            html.Div([
-                html.Br(),
-                html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
-                html.Button("Afficher", id="show-button", className="modern-button", n_clicks=0),
-                html.Div(id='dd-output-update')
-            ], className="button-group"),
-            html.Div("Lorsque la mise à jour est terminée, cliquez sur \"show\" pour afficher les données.", className="info"),
-        ], className="menu"),
-        # Main
-        html.Div([html.Div(id='dd-output-data')], className="main"),
-        dcc.Store(id='store')
+                html.Div([
+                    html.Br(),
+                    html.Label('Affichage', className="input-label"),
+                    dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems',className="radioItems"),
+                    html.Div(id='dd-output-affichage'),
+                ]),
+                html.Div([
+                    html.Br(),
+                    html.Label('Filière', className="input-label"),
+                    dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems"),
+                    html.Div(id='dd-output-filiere'),
+                ]),
+                html.Div([
+                    html.Br(),
+                    html.Label('Secteur'),
+                    dcc.Dropdown(secteurs,
+                                placeholder="Sélectionnez un secteur",
+                                id='secteur-dropdown',
+                                multi=False), 
+                    html.Div(id='dd-output-secteur'),
+                ]),
+                html.Div([
+                    html.Br(),
+                    html.Label('Sélectionnez une ou plusieurs régions'),
+                    dcc.Dropdown(regions,
+                                placeholder="Toutes les régions",
+                                id='regions-dropdown',
+                                multi=True),
+                    html.Div(id='dd-output-regions'),
+                ]),
+                html.Div([
+                    html.Br(),
+                    html.Label('Date de début'),
+                    dcc.Dropdown(annees, id='debut-dropdown', placeholder='Sélectionnez une année', multi=False),
+                    html.Div(id='dd-output-debut'),
+                ]),
+                html.Div([
+                    html.Br(),
+                    html.Label('Date de fin'),
+                    dcc.Dropdown(annees, id='fin-dropdown', placeholder='Sélectionnez une année', multi=False),
+                    html.Div(id='dd-output-fin'),
+                ]),
+                html.Div([
+                    html.Br(),
+                    html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
+                    html.Button("Afficher", id="show-button", className="modern-button", n_clicks=0),
+                    html.Div(id='dd-output-update')
+                ], className="button-group"),
+                html.Div("Lorsque la mise à jour est terminée, cliquez sur \"show\" pour afficher les données.", className="info"),
+            ], className="menu"),
+        ], className="left"),
+
+        html.Div([
+            # Navigation
+            html.Div([        
+                html.Div([
+                dcc.ConfirmDialogProvider(children=html.Button('Tuto', className="tuto-button"),
+                message="Choisissez l'affichage que vous voulez, puis la filière qui vous intéresse, ainsi que les paramètres de votre recherche (secteur, régions et dates).\nEnsuite appuyer sur update, attendre la fin du chargement, appuyer sur affichage.",
+                id='tuto-message'),
+                ], className="tuto"),
+
+                html.Div([
+                dcc.ConfirmDialogProvider(children=html.Button('Les données', className="data-button"),
+                message="Nos données proviennent du site data.gouv, plus précisément de l'agence ORE.\nElles sont accessible avec lien suivant : https://opendata.agenceore.fr/explore/dataset/conso-elec-gaz-annuelle-par-naf-agregee-region/api/",
+                id='data-message'),
+                ], className="data"),
+
+                
+                html.Div([
+                dcc.ConfirmDialogProvider(children=html.Button('Choix technologiques', className="technos-button"),
+                message="Nous avons utilisés la biblitohèque python 'plotly' pour générer le site WEB ainsi que les différents graphiques.",
+                id='technos-message'),
+                ], className="technos"),
+            ], className="navigation"),
+
+            # Main
+            html.Div([html.Div(id='dd-output-data')], className="main"),
+            dcc.Store(id='store')
+        ], className="right")
+
     ], className="app"),
+
+
+
+
     # Footer
     html.Div([
         html.Div(
