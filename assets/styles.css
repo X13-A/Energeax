@@ -19,24 +19,26 @@ body {
 
 .navigation {
     display: flex;
-    font-size: x-large;
     margin-top: 8px;
 }
 
 .tuto, .data, .technos {
-    display: flex;
-    font-size: large;
-    background-color: #383d76;
-    color: white;
-    border-color: transparent;
     border-radius: 10px;
-    width: 100%;
     height: 70px;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
 }
 
-.tuto:hover, .data:hover, .technos:hover {
+.tuto-button, .data-button, .technos-button {
+    font-size: x-large;
+    background-color: #383d76;
+    border: transparent;
+    color: white;
+    border-radius: 10px;
+    height: 70px;
+    width: 100%;
+}
+
+.tuto-button:hover, .data-button:hover, .technos-button:hover {
     background-color: #2e3160;
     border-color: white;
 }
@@ -46,7 +48,7 @@ body {
 }
 
 .data {
-    margin: 0px 4px;
+    margin: 0 4px 0 4px;
 }
 
 .technos {

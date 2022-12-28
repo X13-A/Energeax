@@ -37,17 +37,25 @@ app.layout = html.Div([
     # Navigation
     html.Div([
 
-        dcc.ConfirmDialogProvider(children=html.Button('Tuto', className="tuto"),
-        message='jczerb',
-        id='test'),
+        
+        html.Div([
+        dcc.ConfirmDialogProvider(children=html.Button('Tuto', className="tuto-button"),
+        message="Choisissez l'affichage que vous voulez, puis la filière qui vous intéresse, ainsi que les paramètres de votre recherche (secteur, régions et dates).\nEnsuite appuyer sur update, attendre la fin du chargement, appuyer sur affichage.",
+        id='tuto-message'),
+        ], className="tuto"),
 
-        dcc.ConfirmDialogProvider(children=html.Button('Les données', className="data"),
-        message='jczerb',
-        id='test'),
+        html.Div([
+        dcc.ConfirmDialogProvider(children=html.Button('Les données', className="data-button"),
+        message="Nos données proviennent du site data.gouv, plus précisément de l'agence ORE.\nElles sont accessible avec lien suivant : https://opendata.agenceore.fr/explore/dataset/conso-elec-gaz-annuelle-par-naf-agregee-region/api/",
+        id='data-message'),
+        ], className="data"),
 
-        dcc.ConfirmDialogProvider(children=html.Button('Choix technologiques', className="technos"),
-        message='jczerb',
-        id='test'),
+        
+        html.Div([
+        dcc.ConfirmDialogProvider(children=html.Button('Choix technologiques', className="technos-button"),
+        message="Nous avons utilisés la biblitohèque python 'plotly' pour générer le site WEB ainsi que les différents graphiques.",
+        id='technos-message'),
+        ], className="technos"),
         
     ], className="navigation"),
     # App
@@ -99,7 +107,7 @@ app.layout = html.Div([
             html.Div([
                 html.Br(),
                 html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
-                html.Button("Show", id="show-button", className="modern-button", n_clicks=0),
+                html.Button("Afficher", id="show-button", className="modern-button", n_clicks=0),
                 html.Div(id='dd-output-update')
             ], className="button-group"),
             html.Div("Lorsque la mise à jour est terminée, cliquez sur \"show\" pour afficher les données.", className="info"),
