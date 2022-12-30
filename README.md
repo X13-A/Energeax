@@ -3,7 +3,7 @@ Cette application permet de générer différents graphiques sur la consommation
 
 1. Pour commencer, veuillez ouvrir le dossier se "Projet" dans Visual Studio Code.
 2. Ensuite, rendez-vous dans le terminale de VS Code et veuillez exécuter le commande suivante (ctrl+j si console fermée) : 'pip install -r ./requirements.txt'
-3. Une fois l'installation terminée, allez dans le fichier Dashboard.py et exécuter le code à l'aide du boutton Run en haut à droite.
+3. Une fois l'installation terminée, éxecuter la commande suivante : 'python main.py'
 4. Ouvrez votre navigateur internet et rechercher le site suivant : http://127.0.0.1:8050
 
 
