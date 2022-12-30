@@ -30,15 +30,12 @@ graph = None
 app = Dash(__name__)
 app.title = 'Energeax'
 app.layout = html.Div([
-
     # Header
     html.Div([
         html.H1("Consommation annuelle d'énergie par région", className="header-item"),
     ], className="header"),
-
     # App
     html.Div([
-        
         html.Div([
             # Menu
             html.Div([
@@ -93,7 +90,6 @@ app.layout = html.Div([
                 html.Div("Lorsque la mise à jour est terminée, cliquez sur \"show\" pour afficher les données.", className="info"),
             ], className="menu"),
         ], className="left"),
-
         html.Div([
             # Navigation
             html.Div([        
@@ -102,17 +98,14 @@ app.layout = html.Div([
                 message="Choisissez l'affichage que vous voulez, puis la filière qui vous intéresse, ainsi que les paramètres de votre recherche (secteur, régions et dates).\nEnsuite appuyer sur update, attendre la fin du chargement, appuyer sur affichage.",
                 id='tuto-message'),
                 ], className="tuto"),
-
                 html.Div([
                 dcc.ConfirmDialogProvider(children=html.Button('Les données', className="data-button"),
                 message="Nos données proviennent du site data.gouv, plus précisément de l'agence ORE.\nElles sont accessible avec lien suivant : https://opendata.agenceore.fr/explore/dataset/conso-elec-gaz-annuelle-par-naf-agregee-region/api/",
                 id='data-message'),
                 ], className="data"),
-
-                
                 html.Div([
                 dcc.ConfirmDialogProvider(children=html.Button('Choix technologiques', className="technos-button"),
-                message="Nous avons utilisés la biblitohèque python 'plotly' pour générer le site WEB ainsi que les différents graphiques.",
+                message="Nous avons utilisés la biblitohèque python 'pandas' pour manipuler la donnée ainsi que 'plotly' pour générer le site WEB et les différents graphiques.",
                 id='technos-message'),
                 ], className="technos"),
             ], className="navigation"),
@@ -121,12 +114,7 @@ app.layout = html.Div([
             html.Div([html.Div(id='dd-output-data')], className="main"),
             dcc.Store(id='store')
         ], className="right")
-
     ], className="app"),
-
-
-
-
     # Footer
     html.Div([
         html.Div(
@@ -258,4 +246,4 @@ def update():
             graph = html.Iframe(id='map', className="map", srcDoc = open('france.html', 'r').read())
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server()
