@@ -4,6 +4,22 @@ import pandas as pd
 from requests.build_url import buildUrl
 import math
 
+def formatNumber(number):
+    # Rounds the number and converts it to a string
+    number = str(round(number))
+
+    # Adds a space every 3 digit in a number
+    number = number[::-1]
+    spaced_number = ''
+    for i in range(0, len(number), 3):
+        chunk = number[i:i+3]
+        spaced_number += chunk + ' '
+
+    # Remove trailing space
+    spaced_number = spaced_number[:-1]
+
+    return spaced_number[::-1]
+
 def buildHistogram(filtres):
     min = math.inf
     max = 0
@@ -27,11 +43,13 @@ def buildHistogram(filtres):
             if conso > max: max = conso
 
     # set consumption ranges
-    n = 100
+    n = 500
     intervals = [min + ((max-min)/n)*i for i in range(n+1)]
     counts = {}
     for interval in intervals:
         counts[interval] = 0
+
+
 
     # count occurences for each range
     for data in datasets.values():
@@ -54,7 +72,7 @@ def buildHistogram(filtres):
     minCount = math.inf
     maxCount = 0
     for conso, count in counts.items():
-        dataframe["conso"].append(str(conso))
+        dataframe["conso"].append(formatNumber(conso))
         dataframe["count"].append(count)
         if count < minCount: minCount = count
         if count > maxCount: maxCount = count

@@ -11,6 +11,7 @@ from requests.elec_region_year import getElecByRegionAndYear
 from requests.create_map import createMap
 from requests.create_map import getElecByYear
 from requests.histogram import buildHistogram
+import math
 
 from constants import *
 
@@ -236,7 +237,7 @@ def update():
         if filtres["affichage"] == "Graphique":
             titre = f"Consommation en Mégawatts par année {'du secteur ' +  filtres['secteur'] + ' ' if filtres['secteur'] else ''}en France"
             fig = go.Figure()
-            fig.update_yaxes(title = "Consommation annuelle (MW)")
+            fig.update_yaxes(title = "Consommation annuelle (MWh)")
             fig.update_xaxes(title = "Année")
             dataframes = getElecByRegionAndYear(filtres)
             for frame in dataframes:
@@ -265,20 +266,50 @@ def update():
             data = buildHistogram(filtres)
             dataframe = data["data"]
             min = 0
-            max = data["max"]
+            max = math.sqrt(data["max"])
 
             fig = go.Figure()
-            fig.update_yaxes(title = "Occurences")
+            fig.update_yaxes(title = "Bâtiments dans la tranche de consommation")
             fig.update_yaxes(range=[min, max])
-            fig.update_xaxes(title = "Consommation annuelle (MW)")
+            fig.update_xaxes(title = "Consommation annuelle (MWh)")
 
-            fig = fig.add_trace(go.Bar(x = dataframe["conso"], y = dataframe["count"], name = "Bar chart"))
-            fig = fig.add_trace(go.Scatter(x = dataframe["conso"], y = dataframe["count"], marker_color='black', name = "Curve"))
+            # Flatten Y axis for readability
+            shownFrame = {
+                "count": [],
+                "conso": [x for x in dataframe["conso"]]
+            }
+
+            for count in dataframe["count"]:
+                shownFrame["count"].append(math.sqrt(count))
+
+            shownFrame = pd.DataFrame(shownFrame)
+
+            # Set accurate ToolTip
+            hover_text = []
+            for i in range(len(dataframe)):
+                count = dataframe.loc[i, "count"]
+                consoMax = dataframe.loc[i, "conso"]
+                consoMin = 0
+                if i > 0: consoMin = dataframe.loc[i-1, "conso"]
+                hover_text.append(f"{count} bâtiments ayant une consommation annuelle entre {consoMin} et {consoMax} MWh")
+
+            # Set accurate Y labels
+            n = 10
+            tickvals = [round(min + ((max-min)/n)*i) for i in range(n+1)]
+            fig.update_yaxes(tickvals=tickvals)
+            ticktext=[str(round(n*n)) for n in tickvals]
+            fig.update_yaxes(ticktext=ticktext)
+
+            fig = fig.add_trace(go.Bar(x = shownFrame["conso"], y = shownFrame["count"], name = "Bar chart", text=hover_text))
+            # fig = fig.add_trace(go.Scatter(x = shownFrame["conso"], y = shownFrame["count"], marker_color='black', name = "Curve", text=hover_text))
             
             titre = "Nombre de bâtiments dans chaque tranche de consommation"
             graph = html.Div([
                 html.H2(titre, className="graph-title"),
                 dcc.Graph(figure = fig)
             ])
+
+
+
 if __name__ == '__main__':
     app.run_server(debug=True)

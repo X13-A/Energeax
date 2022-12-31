@@ -56,7 +56,7 @@ body {
     height: 50px;
     width: 100%;
     transition-duration: 200ms;
-    border: white 4px solid;
+    border: white 1px solid;
     margin-top: 4px;
 }
 
@@ -75,7 +75,7 @@ body {
 .tuto-button:hover, .data-button:hover, .technos-button:hover {
     /* border-color: black; */
     background-color: white;
-    border: rgb(230, 230, 230)4px solid;
+    border: rgb(230, 230, 230) 1px solid;
     cursor: pointer;
 }
 
