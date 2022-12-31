@@ -35,7 +35,6 @@ app.title = 'Energeax'
 app.layout = html.Div([
     # Header
     html.Div([
-        html.Span("Energeax", className="header-item"),
         html.Span("La France et l'énergie", className="header-item"),
         html.Div(
             html.Img(src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg",
@@ -159,7 +158,7 @@ def update_output(n_clicks1, n_clicks2, n_clicks3, n_clicks4, children):
             list4 = [
                 "Le graphique permet d'étudier l'évolution de la consommation de plusieurs régions de façon superposée",
                 "La carte affiche la moyenne de consommation de chaque région pour la période choisie",
-                "L'histogramme compte le nombre de bâtiments dans chaque tranche de consommation"
+                "L'histogramme compte le nombre de lieux dans chaque tranche de consommation"
             ]
             return html.Div([
                 html.H5("Pour afficher les données:", className="list-title"),
@@ -338,7 +337,7 @@ def update():
             max = math.sqrt(data["max"])
 
             fig = go.Figure()
-            fig.update_yaxes(title = f"Bâtiments dans la tranche de consommation")
+            fig.update_yaxes(title = f"lieux dans la tranche de consommation")
             fig.update_yaxes(range=[min, max])
             fig.update_xaxes(title = "Consommation annuelle (MWh)")
 
@@ -360,7 +359,7 @@ def update():
                 consoMax = dataframe.loc[i, "conso"]
                 consoMin = 0
                 if i > 0: consoMin = dataframe.loc[i-1, "conso"]
-                hover_text.append(f"{count} bâtiments ayant une consommation annuelle entre {consoMin} et {consoMax} MWh")
+                hover_text.append(f"{count} lieux ayant une consommation annuelle entre {consoMin} et {consoMax} MWh")
 
             # Set accurate Y labels
             n = 10
@@ -371,7 +370,7 @@ def update():
 
             
             # Generate title
-            titre = f"Nombre de bâtiments dans chaque tranche de consommation en {filtres['fin']}"
+            titre = f"Nombre de lieux dans chaque tranche de consommation en {filtres['fin']}"
             if filtres['secteur']: titre += f" (secteur: {filtres['secteur']})"
 
             # Set histogram for use
