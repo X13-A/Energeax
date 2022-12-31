@@ -35,23 +35,21 @@ def buildHistogram(filtres):
         data = json.loads(response.read())
         datasets[code_region] = data
 
-    # set min and max values
+    # set min and max values for consumption
     for data in datasets.values():
         for entry in data["records"]:
             conso = entry["fields"]["conso"]
             if conso < min: min = conso
             if conso > max: max = conso
 
-    # set consumption ranges
+    # set consumption intervals
     n = 500
     intervals = [min + ((max-min)/n)*i for i in range(n+1)]
     counts = {}
     for interval in intervals:
         counts[interval] = 0
 
-
-
-    # count occurences for each range
+    # count occurences for each interval
     for data in datasets.values():
         for entry in data["records"]:
             for interval in intervals:
@@ -69,6 +67,7 @@ def buildHistogram(filtres):
         "count": []
     }
 
+    # fills dataframe while keeping track of min and max Y values
     minCount = math.inf
     maxCount = 0
     for conso, count in counts.items():
@@ -77,23 +76,8 @@ def buildHistogram(filtres):
         if count < minCount: minCount = count
         if count > maxCount: maxCount = count
 
-
     return {
         "min": minCount,
         "max": maxCount,
         "data": pd.DataFrame(dataframe)
     } 
-
-
-# filtres = {
-#     "affichage": "Carte",
-#     "annee": 2021,
-#     "regions" : ['11', '94'],
-#     "filiere" : "Electricité",
-#     "secteur" : "",
-#     "lignes" : "10000"
-# }
-
-# dataframe = buildHistogram(filtres)
-
-# print(dataframe)
