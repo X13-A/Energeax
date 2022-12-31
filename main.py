@@ -1,6 +1,6 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 import dash
-from dash import Dash, dcc, html, Input, Output, State
+from dash import Dash, dcc, html, Input, Output, State, callback_context
 import json
 import folium
 from dash.exceptions import PreventUpdate
@@ -27,6 +27,44 @@ filtres = {
 
 data = pd.DataFrame([])
 graph = None
+#endregion
+
+#region welcome page
+def getWelcomePage():
+    list1 = [
+        "Choisissez le type d'affichage que vous voulez",
+        "Configurez vos filtres",
+        "Cliquez sur update",
+        "Quand le traitement des données est terminé, cliquez sur \"Afficher\""
+    ]
+    list2 = [
+        "Pour les secteurs: Tout est selectionné",
+        "Pour les régions: Tout est selectionné",
+        "Pour la période: L'année 2021 est selectionnée"
+    ]
+    list3 = [
+        "Si une seule valeur est choisie, elle seule sera retenue",
+        "Si deux valeurs sont choisies, un intervalle entre le début et la fin sera utilisé",
+        "Les données ne s'actualiseront pas si l'intervalle est invalide (début > fin)",
+        "Pour l'histogramme, seul la date de fin est retenue"
+    ]
+    list4 = [
+        "Le graphique permet d'étudier l'évolution de la consommation de plusieurs régions de façon superposée",
+        "La carte affiche la moyenne de consommation de chaque région pour la période choisie",
+        "L'histogramme compte le nombre de lieux dans chaque tranche de consommation"
+    ]
+    return html.Div([
+        html.H5("Pour afficher les données:", className="list-title"),
+        html.Ul([html.Li(item, className="list-item") for item in list1], className="list"),
+        html.H5("Si rien n'est spécifié dans le filtre:", className="list-title"),
+        html.Ul([html.Li(item, className="list-item") for item in list2], className="list"),
+        html.H5("Fonctionnement du filtre début / fin:", className="list-title"),
+        html.Ul([html.Li(item, className="list-item") for item in list3], className="list"),
+        html.H5("Les 3 types d'affichages:", className="list-title"),
+        html.Ul([html.Li(item, className="list-item") for item in list4], className="list"),
+        ],
+        className="text"
+    )
 #endregion
 
 #region Dashboard
@@ -102,13 +140,13 @@ app.layout = html.Div([
         html.Div([
             # Navigation
             html.Div([        
-                html.Div([html.Button('Didacticiel', id='tuto-button', className="tuto-button")], className="tuto"),
+                html.Div([html.Button('Prise en main', id='tuto-button', className="tuto-button")], className="tuto"),
                 html.Div([html.Button('Les données', id='data-button', className="data-button")], className="data"),
                 html.Div([html.Button('Technologies', id='technos-button', className="technos-button")], className="technos"),
             ], className="navigation"),
 
             # Main
-            html.Div([html.Div(id='dd-output-data')], className="main"),
+            html.Div([html.Div(getWelcomePage(), id='dd-output-data')], className="main"),
             dcc.Store(id='store')
         ], className="right")
     ], className="app"),
@@ -138,40 +176,7 @@ def update_output(n_clicks1, n_clicks2, n_clicks3, n_clicks4, children):
     if ctx.triggered:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if button_id == 'tuto-button':
-            list1 = [
-                "Choisissez le type d'affichage que vous voulez",
-                "Configurez vos filtres",
-                "Cliquez sur update",
-                "Quand le traitement des données est terminé, cliquez sur \"Afficher\""
-            ]
-            list2 = [
-                "Pour les secteurs: Tout est selectionné",
-                "Pour les régions: Tout est selectionné",
-                "Pour la période: L'année 2021 est selectionnée"
-            ]
-            list3 = [
-                "Si une seule valeur est choisie, elle seule sera retenue",
-                "Si deux valeurs sont choisies, un intervalle entre le début et la fin sera utilisé",
-                "Les données ne s'actualiseront pas si l'intervalle est invalide (début > fin)",
-                "Pour l'histogramme, seul la date de fin est retenue"
-            ]
-            list4 = [
-                "Le graphique permet d'étudier l'évolution de la consommation de plusieurs régions de façon superposée",
-                "La carte affiche la moyenne de consommation de chaque région pour la période choisie",
-                "L'histogramme compte le nombre de lieux dans chaque tranche de consommation"
-            ]
-            return html.Div([
-                html.H5("Pour afficher les données:", className="list-title"),
-                html.Ul([html.Li(item, className="list-item") for item in list1], className="list"),
-                html.H5("Si rien n'est spécifié dans le filtre:", className="list-title"),
-                html.Ul([html.Li(item, className="list-item") for item in list2], className="list"),
-                html.H5("Fonctionnement du filtre début / fin:", className="list-title"),
-                html.Ul([html.Li(item, className="list-item") for item in list3], className="list"),
-                html.H5("Les 3 types d'affichages:", className="list-title"),
-                html.Ul([html.Li(item, className="list-item") for item in list4], className="list"),
-                ],
-                className="text"
-            )
+            return getWelcomePage()
         elif button_id == 'data-button':
             return html.Div(
                 [

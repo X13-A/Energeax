@@ -41,11 +41,12 @@ body {
 
 .list-title {
     font-size: 1.2rem;
-    margin: 1rem 0;
+    margin-bottom: 0.5rem;
 }
 
 .list {
     margin-left: 1.2rem;
+    margin-bottom: 2rem;
 }
 
 .list-item {
@@ -69,7 +70,7 @@ body {
     height: 50px;
     width: 100%;
     transition-duration: 200ms;
-    border: white 1px solid;
+    border: white 2px solid;
     margin-top: 4px;
 }
 
@@ -88,7 +89,7 @@ body {
 .tuto-button:hover, .data-button:hover, .technos-button:hover {
     /* border-color: black; */
     background-color: white;
-    border: rgb(230, 230, 230) 1px solid;
+    border: rgb(230, 230, 230) 2px solid;
     cursor: pointer;
 }
 

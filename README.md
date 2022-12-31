@@ -1,5 +1,5 @@
 # User guide
-Cette application permet de générer différents graphiques sur la consommation annuelle d’électricité et de gaz par région.
+Cette application permet de générer différents graphiques sur la consommation annuelle d’électricité et de gaz par région en France.
 
 ## Installation :
 1. Pour commencer, rendez vous dans le répertoire principal du projet et exécutez la commande suivante: 'pip install -r ./requirements.txt'
@@ -37,7 +37,7 @@ Les données ont été collectées à l'aide d'une API du site data.gouv, qui fo
 L'analyse des données de consommation d'énergie par région en France montre des différences significatives dans les niveaux de consommation d'électricité et de gaz. Les régions du nord et de l'est de la France ont généralement des niveaux de consommation plus élevés, tandis que les régions du sud et de l'ouest ont des niveaux de consommation plus faibles. Cette information peut être utilisée pour cibler les efforts de réduction de la consommation d'énergie et pour élaborer des stratégies de développement durable adaptées aux besoins de chaque région. D'autre part, la tendance de consommation semble être restée relativement stable, avec une légère chute pendant la période du COVID-19 et une légère hausse de façon générale chaque année.
 
 ## Pistes d'amélioration :
-Il aurait été intéressant de croiser ces données avec le côut de l'électricité en France, afin de voir la côut annuel moyen d'un foyer ou autres statistiques similaires.
+Il aurait été intéressant de croiser ces données avec le coût de l'électricité en France, afin de voir la coût annuel moyen d'un foyer ou autres statistiques similaires.
 Il serait également utile d'explorer d'autres sources de données pour obtenir une vision plus complète de la consommation d'énergie en France et de ses déterminants.
 
 
