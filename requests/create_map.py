@@ -19,7 +19,7 @@ def getElecByYear(filtres):
     for annee in annees:
         i = 0
         for codeRegion in filtres["regions"]:
-            url = buildUrl("10000", annee, codeRegion, filtres["filiere"], "")
+            url = buildUrl("10000", annee, codeRegion, filtres["filiere"], filtres["secteur"])
             response = urllib.request.urlopen(url)
             data = json.loads(response.read())
             for entry in data["records"]:

@@ -1,3 +1,8 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
 .content {
     font-family: 'Raleway', sans-serif;
     color: black;
@@ -8,12 +13,14 @@ body {
 }
 
 .header {
+    background-color: whitesmoke;
+    color: #2C2C2C;
+    border-bottom: 1px solid grey;
     display: flex;
-    justify-content: center;
-    border-bottom: 1px solid;
+    justify-content: space-between;
     align-items: center;
-    font-size: x-large;
-    padding: 15px;
+    font-size: 3rem;
+    padding: 2rem 3rem;
 }
 
 .app {
@@ -21,19 +28,19 @@ body {
 }
 
 .left {
-    margin-top: 5px;
-    padding-right: 10px;
+    padding: 2rem 2rem;
+    padding-top: 0.5rem;
     border-right: 1px solid;
+    width: max-content;
 }
 
 .right {
-    padding-left: 5px;
+    background-color: white;
     width: 100%;
 }
 
 .navigation {
     display: flex;
-    margin: 8px;
 }
 
 .tuto, .data, .technos {
@@ -43,45 +50,62 @@ body {
 
 .tuto-button, .data-button, .technos-button {
     font-size: large;
-    background-color: rgb(229, 229, 229);
-    border-color: transparent;
-    color: black;
+    background-color: rgb(240, 240, 240);
+    color:  #373737;
     border-radius: 10px;
-    height: 60px;
+    height: 50px;
     width: 100%;
-}
-
-.tuto-button:hover, .data-button:hover, .technos-button:hover {
-    border-color: black;
-    background-color: white;
+    transition-duration: 200ms;
+    border: white 4px solid;
+    margin-top: 4px;
 }
 
 .tuto {
-    margin-right: 4px;
+    margin: 0 4px;
 }
 
 .data {
-    margin: 0 4px 0 4px;
+    margin-right: 4px;
 }
 
 .technos {
-    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.tuto-button:hover, .data-button:hover, .technos-button:hover {
+    /* border-color: black; */
+    background-color: white;
+    border: rgb(230, 230, 230)4px solid;
+    cursor: pointer;
+}
+
+.graph-title {
+    font-weight: 400;
+    text-align: center;
+    width: 80%;
+    margin: 0 10%;
+    margin-bottom: 1rem;
 }
 
 .footer {
     display: flex;
     border-top: 1px solid;
-    margin-top: 8px;
-    padding: 0px 10px 10px 10px;
-    justify-content: space-around;
+    padding: 0.25rem 2rem;
+    justify-content:space-between;
     align-items: center;
+    background-color: white;
+}
+
+.text {
+    font-size: 1.2rem;
+    margin: 1rem 2rem;
 }
 
 .map, .dash-graph {
     border: none;
-    width: 730px;
+    width: 80%;
     height: 500px;
-    margin-left: 25%;
+    margin: 0 10%;
 }
 
 .info {
@@ -91,9 +115,9 @@ body {
 }
 
 .logo {
-    padding-top: 13px;
     width: 150px;
     height: 75px;
+    border: 3px solid white;
 }
 
 .button-group {
@@ -121,9 +145,11 @@ body {
     border-color: transparent;
     border-radius: 6px;
     margin-bottom: 3px;
+    transition-duration: 200ms;
 }
 
 .modern-button:hover {
     background-color: white;
-    border-color: black;
+    border: 1px solid #b9b9b9;
+    cursor: pointer;
 }

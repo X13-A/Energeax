@@ -1,4 +1,5 @@
 # visit http://127.0.0.1:8050/ in your web browser.
+import dash
 from dash import Dash, dcc, html, Input, Output, State
 import json
 import folium
@@ -9,6 +10,8 @@ import plotly.graph_objects as go
 from requests.elec_region_year import getElecByRegionAndYear
 from requests.create_map import createMap
 from requests.create_map import getElecByYear
+from requests.histogram import buildHistogram
+
 from constants import *
 
 #region variables
@@ -32,7 +35,13 @@ app.title = 'Energeax'
 app.layout = html.Div([
     # Header
     html.Div([
-        html.H1("Consommation annuelle d'énergie par région", className="header-item"),
+        html.Span("Energeax", className="header-item"),
+        html.Span("La consommation en France", className="header-item"),
+        html.Div(
+            html.Img(src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg",
+            alt="Drapeau français",
+            className="logo")
+        ),
     ], className="header"),
     # App
     html.Div([
@@ -42,13 +51,13 @@ app.layout = html.Div([
                 html.Div([
                     html.Br(),
                     html.Label('Affichage', className="input-label"),
-                    dcc.RadioItems(['Graphique', 'Carte'], 'Graphique', id='affichage-radioitems',className="radioItems"),
+                    dcc.RadioItems(['Graphique', 'Carte', 'Histogramme'], 'Graphique', id='affichage-radioitems',className="radioItems", inputStyle={"margin-right": "0.3rem"}),
                     html.Div(id='dd-output-affichage'),
                 ]),
                 html.Div([
                     html.Br(),
                     html.Label('Filière', className="input-label"),
-                    dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems"),
+                    dcc.RadioItems(['Electricité', 'Gaz'], 'Electricité', id='filiere-radioitems', className="radioItems", inputStyle={"margin-right": "0.3rem"}),
                     html.Div(id='dd-output-filiere'),
                 ]),
                 html.Div([
@@ -81,6 +90,7 @@ app.layout = html.Div([
                     dcc.Dropdown(annees, id='fin-dropdown', placeholder='Sélectionnez une année', multi=False),
                     html.Div(id='dd-output-fin'),
                 ]),
+                html.Div("L'année 2021 est selectionnée par défaut", className="info"),
                 html.Div([
                     html.Br(),
                     html.Button("Update", id="update-button", className="modern-button", n_clicks=0),
@@ -93,21 +103,9 @@ app.layout = html.Div([
         html.Div([
             # Navigation
             html.Div([        
-                html.Div([
-                dcc.ConfirmDialogProvider(children=html.Button('Tuto', className="tuto-button"),
-                message="Choisissez l'affichage que vous voulez, puis la filière qui vous intéresse, ainsi que les paramètres de votre recherche (secteur, régions et dates).\nEnsuite appuyer sur update, attendre la fin du chargement, appuyer sur affichage.",
-                id='tuto-message'),
-                ], className="tuto"),
-                html.Div([
-                dcc.ConfirmDialogProvider(children=html.Button('Les données', className="data-button"),
-                message="Nos données proviennent du site data.gouv, plus précisément de l'agence ORE.\nElles sont accessible avec lien suivant : https://opendata.agenceore.fr/explore/dataset/conso-elec-gaz-annuelle-par-naf-agregee-region/api/",
-                id='data-message'),
-                ], className="data"),
-                html.Div([
-                dcc.ConfirmDialogProvider(children=html.Button('Choix technologiques', className="technos-button"),
-                message="Nous avons utilisés la biblitohèque python 'pandas' pour manipuler la donnée ainsi que 'plotly' pour générer le site WEB et les différents graphiques.",
-                id='technos-message'),
-                ], className="technos"),
+                html.Div([html.Button('Didacticiel', id='tuto-button', className="tuto-button")], className="tuto"),
+                html.Div([html.Button('Les données', id='data-button', className="data-button")], className="data"),
+                html.Div([html.Button('Choix technologiques', id='technos-button', className="technos-button")], className="technos"),
             ], className="navigation"),
 
             # Main
@@ -117,51 +115,51 @@ app.layout = html.Div([
     ], className="app"),
     # Footer
     html.Div([
+        html.Div("Alex Foulon & Erwan Gautier", className="Auteurs"),
         html.Div(
             html.Img(src="https://www.usinenouvelle.com/mediatheque/4/3/0/000271034_image_600x315.jpg",
             alt="logo de l'ESIEE Paris",
             className="logo")
         ),
-        html.Div("Alex Foulon & Erwan Gautier", className="Auteurs")
     ], className="footer"),
 ], className="content")
 #endregion
 
-#region callback navigation
-@app.callback(
-    Output('body-div', 'children'),
-    Input('tuto-button', 'n_clicks')
-)
-def update_output(n_clicks):
-    if n_clicks is None:
-        # Afficher la pop-up
-        return {'display': 'block'}
-    else:
-        # Masquer la pop-up
-        return {'display': 'none'}
+#region callbacks affichage
+@app.callback(Output('dd-output-data', 'children'),
+              [Input('tuto-button', 'n_clicks'),
+               Input('data-button', 'n_clicks'),
+               Input('technos-button', 'n_clicks'),
+               Input('show-button', 'n_clicks')],
+              [State('dd-output-data', 'children')])
 
-# @app.callback(
-#     Output('dd-output-data', 'children'),
-#     [Input('data-button', 'n_clicks')]
-# )
-
-# @app.callback(
-#     Output('dd-output-data', 'children'),
-#     [Input('technos-button', 'n_clicks')]
-# )
-
+def update_output(n_clicks1, n_clicks2, n_clicks3, n_clicks4, children):
+    ctx = dash.callback_context
+    if ctx.triggered:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        if button_id == 'tuto-button':
+            return html.Div(
+                "Choisissez l'affichage que vous voulez, puis la filière qui vous intéresse, ainsi que les paramètres de votre recherche (secteur, régions et dates).\nEnsuite appuyer sur update, attendre la fin du chargement, appuyer sur affichage.",
+                className="text"
+            )
+        elif button_id == 'data-button':
+            return html.Div(
+                "Nos données proviennent du site data.gouv, plus précisément de l'agence ORE.\nElles sont accessible avec lien suivant : https://opendata.agenceore.fr/explore/dataset/conso-elec-gaz-annuelle-par-naf-agregee-region/api/",
+                className="text"
+            )
+        elif button_id == 'technos-button':
+            return html.Div(
+                "Nous avons utilisés la biblitohèque python 'pandas' pour manipuler la donnée ainsi que 'plotly' pour générer le site WEB et les différents graphiques.",
+                className="text"
+            )
+        elif button_id == 'show-button':
+            return html.Div([
+                html.Div(graph)
+            ])
+    return children
 #endregion
 
-#region callback data and graph
-@app.callback(
-    Output('dd-output-data', 'children'),
-    [Input('show-button', 'n_clicks')]
-)
-def update_graph(value):
-    return html.Div([
-        html.Div(graph)
-        ])
-
+#region callbacks data
 @app.callback(
     Output('dd-output-update', 'children'),
     [Input('update-button', 'n_clicks')],
@@ -170,7 +168,7 @@ def update_data(value):
     update()
 #endregion
 
-#region callback filters
+#region callbacks filters
 @app.callback(
     Output('dd-output-affichage', 'children'),
     Input('affichage-radioitems', 'value'),
@@ -214,12 +212,12 @@ def update_fin(value):
     filtres["fin"] = value
 #endregion
 
-
+# Vérifie les inputs
 def areInputsValid():
-    filledInputs = filtres['debut'] and filtres['fin'] and filtres["filiere"]
-    if not filledInputs: return False
-
-    validDates = filtres['fin'] >= filtres['debut']
+    validDates = True
+    if filtres['fin'] and filtres['debut']:
+        validDates = filtres['fin'] >= filtres['debut']
+    
     if not validDates: return False
     
     return True
@@ -229,21 +227,58 @@ def update():
     global filtres
     global graph
     if areInputsValid():
-        if not filtres["regions"]: filtres["regions"] = regions
+        if not filtres["regions"]: filtres["regions"] = [code for code, nom in regions.items()]
+        if not filtres ["debut"]: filtres["debut"] = 2021
+        if not filtres ["fin"]: filtres["fin"] = 2021
+        if not filtres ["debut"] and filtres["fin"]: filtres["debut"] == filtres["fin"]
+        if not filtres ["fin"] and filtres["debut"]: filtres["fin"] == filtres["debut"]
+
         if filtres["affichage"] == "Graphique":
             titre = f"Consommation en Mégawatts par année {'du secteur ' +  filtres['secteur'] + ' ' if filtres['secteur'] else ''}en France"
-            fig = go.Figure(layout_title_text=titre)
-            fig.update_yaxes(title = "Consommation (MW)")
+            fig = go.Figure()
+            fig.update_yaxes(title = "Consommation annuelle (MW)")
             fig.update_xaxes(title = "Année")
             dataframes = getElecByRegionAndYear(filtres)
             for frame in dataframes:
                 fig = fig.add_trace(go.Scatter(x = dataframes[frame]["annee"], y = dataframes[frame]["conso"], name = frame))
-            graph = dcc.Graph(figure = fig)
+            graph = html.Div([
+                html.H2(titre, className="graph-title"),
+                dcc.Graph(figure = fig)
+            ])
+
         elif filtres["affichage"] == "Carte":
             dataframe = getElecByYear(filtres)
             map = createMap(dataframe, filtres["regions"])
             map.save(outfile="france.html")
-            graph = html.Iframe(id='map', className="map", srcDoc = open('france.html', 'r').read())
+            titre = ""
+            if filtres['filiere'] == 'Electricité':
+                titre = "Carte de la consommation d'electricité des régions françaises"
+            elif filtres['filiere'] == 'Gaz':
+                titre = "Carte de la consommation de gaz des régions françaises"
+            graph = html.Div([
+                html.H2(titre, className="graph-title"),
+                html.Iframe(id='map', className="map", srcDoc = open('france.html', 'r').read())
+            ])
 
+        elif filtres["affichage"] == "Histogramme":
+            filtres['annee'] = filtres['fin']
+            data = buildHistogram(filtres)
+            dataframe = data["data"]
+            min = 0
+            max = data["max"]
+
+            fig = go.Figure()
+            fig.update_yaxes(title = "Occurences")
+            fig.update_yaxes(range=[min, max])
+            fig.update_xaxes(title = "Consommation annuelle (MW)")
+
+            fig = fig.add_trace(go.Bar(x = dataframe["conso"], y = dataframe["count"], name = "Bar chart"))
+            fig = fig.add_trace(go.Scatter(x = dataframe["conso"], y = dataframe["count"], marker_color='black', name = "Curve"))
+            
+            titre = "Nombre de bâtiments dans chaque tranche de consommation"
+            graph = html.Div([
+                html.H2(titre, className="graph-title"),
+                dcc.Graph(figure = fig)
+            ])
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True)
